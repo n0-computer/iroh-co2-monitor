@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Rust build outputs — every crate, any depth
+target/
+
+# esp-idf toolchain + build cache (firmware)
+.embuild/
+
+# editor / tool caches
+.vscode/
+
+# generated wasm-bindgen output + self-contained bundle (co2-wasm)
+public/wasm/
+dist/
