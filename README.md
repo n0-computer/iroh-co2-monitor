@@ -4,25 +4,26 @@ An [iroh](https://iroh.computer) endpoint running on an **ESP32-C61** (RISC-V, w
 PSRAM) that reads a **Sensirion SCD30** CO2 sensor, shows the air quality on the
 board's RGB LED, and serves the readings over standard QUIC. Dial it — over the
 internet (via an n0 relay) or locally — from a **browser GUI** (Rust compiled to
-WebAssembly).
+WebAssembly) or a **terminal GUI** (ratatui).
 
 Breathe on the sensor and watch the number climb, on the board's LED and in the
 browser at once.
 
 (It also still answers the `echo/0` protocol from the initial bring-up.)
 
-## Three crates (deliberately not a workspace)
+## Four crates (deliberately not a workspace)
 
 | crate | what |
 |-------|------|
 | [`co2-proto/`](co2-proto) | shared irpc protocol: `Reading { co2, temperature, humidity }` + `GetLatest` |
 | [`co2-esp32/`](co2-esp32) | ESP32-C61 firmware — reads the SCD30, drives the LED, serves the RPC |
 | [`co2-wasm/`](co2-wasm) | browser GUI (Rust → WebAssembly): live readings, relay-only |
+| [`co2-cli/`](co2-cli) | terminal GUI (ratatui): the same display, plus direct/relay path + RTT |
 
-The firmware can't share a workspace with the GUI: it needs a different toolchain
+The firmware can't share a workspace with the GUIs: it needs a different toolchain
 (the `esp` channel, target `riscv32imac-esp-espidf`) and a patched, ring-free
-iroh/irpc graph, while the GUI uses released iroh/irpc. The `co2-proto` crate is
-board-agnostic (no `[patch]`) and a path dependency of both.
+iroh/irpc graph, while the GUIs use released iroh/irpc. The `co2-proto` crate is
+board-agnostic (no `[patch]`) and a path dependency of all three.
 
 ## The board
 
@@ -63,6 +64,15 @@ The CO2 traffic-light LED is the devkit's on-board WS2812 on **GPIO8** — no wi
    CO2 number is colored the same way as the board's LED (blue → green → yellow →
    red), fading to gray as a reading ages. Browsers are relay-only; the short ticket
    is enough.
+
+3. **Or the terminal GUI** — same display, plus whether you're on a direct path or a
+   relay, and the RTT:
+   ```bash
+   cd co2-cli
+   cargo run --release -- <ENDPOINT_ID>
+   ```
+   Pass the `Endpoint ID` from the serial console (a ticket works too). Being a full
+   native endpoint it hole-punches, so watch the path flip from relay to direct.
 
 ## License
 

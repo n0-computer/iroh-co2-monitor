@@ -1,0 +1,27 @@
+[package]
+name = "co2-cli"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Terminal GUI (ratatui) for the iroh CO2 monitor — live readings plus connection stats"
+
+[[bin]]
+name = "co2-cli"
+path = "src/main.rs"
+
+[dependencies]
+# Native iroh: default features (UDP/QUIC + relay + discovery), so unlike the
+# browser GUI this client can hole-punch to a direct path and report which one won.
+iroh = "1.0.0"
+iroh-tickets = "1.0.0"
+# Shared protocol (published irpc, no [patch] — a normal crates.io graph).
+co2-proto = { path = "../co2-proto" }
+irpc = { version = "0.17", default-features = false, features = ["rpc", "spans", "derive", "stream"] }
+irpc-iroh = "0.17"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+clap = { version = "4.5", features = ["derive"] }
+ratatui = "0.29"
+crossterm = "0.28"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
