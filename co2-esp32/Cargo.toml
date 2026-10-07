@@ -44,13 +44,9 @@ log = "0.4"
 # the ESP32-C61. 0.51 / esp-idf-sys 0.36 has no such Chip variant and fails at
 # chip detection for MCU="esp32c61".
 esp-idf-svc = "0.52"
-iroh = { git = "https://github.com/n0-computer/iroh", branch = "refactor-hickory", default-features = false }
-iroh-relay = { git = "https://github.com/n0-computer/iroh", branch = "refactor-hickory", default-features = false }
+iroh = { version = "1.3.0", default-features = false }
+iroh-relay = { version = "1.3.0", default-features = false }
 iroh-tickets = "1.0.0"
-# Pin iroh-base to 1.0.0 to match the branch — the [patch] below only covers 1.0.0.
-# Without this, cargo picks a newer crates.io iroh-base for iroh-tickets/irpc-iroh,
-# giving two incompatible iroh-base versions (endpoint.addr() vs EndpointTicket::new).
-iroh-base = "=1.0.0"
 tokio = { version = "1", features = ["rt"] }
 rustls-rustcrypto = { git = "https://github.com/n0-computer/rustls-rustcrypto", branch = "feature-flag-algorithms-v0.0.2", default-features = false, features = ["std", "p256"] }
 rustls = { version = "0.23", default-features = false }
@@ -89,13 +85,6 @@ irpc-iroh = "0.17"
 embuild = "0.33"
 
 [patch.crates-io]
-# Unify the whole iroh family onto our branch. iroh-tickets and irpc-iroh (crates.io)
-# request crates.io iroh/iroh-base; redirect them to refactor-hickory so there is a
-# single iroh in the build (same source+rev as the direct git deps above, so they
-# collapse to one package). netwatch's esp-idf support is upstreamed — no patch.
-iroh = { git = "https://github.com/n0-computer/iroh", branch = "refactor-hickory" }
-iroh-relay = { git = "https://github.com/n0-computer/iroh", branch = "refactor-hickory" }
-iroh-base = { git = "https://github.com/n0-computer/iroh", branch = "refactor-hickory" }
 # irpc/irpc-iroh: redirect the published crates to the local ring-free checkout
 # (default-features=false → no ring, plus a portable-atomic fix for 32-bit). Path
 # deps for now — switch to crates.io irpc once the esp fixes are released.
